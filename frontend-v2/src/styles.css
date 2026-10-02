@@ -60,17 +60,14 @@ body.plain .device-caption { display: none; }
 /* ホームバーのある機種で、タブが下端に潜らないように */
 body.plain .tabs { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
 body.plain .sheet { border-radius: 28px 28px 0 0; padding-bottom: max(22px, env(safe-area-inset-bottom)); }
-/* 大きな画面では、横に伸びきらないよう真ん中に寄せる */
-@media (min-width: 560px) {
-  body.plain { display: flex; justify-content: center; background: #17140F; }
-  body.plain .device-col { width: 100%; max-width: 430px; }
-  body.plain .device { box-shadow: 0 0 60px rgba(0,0,0,.4); }
-}
+/* 幅に応じた本番レイアウトは responsive.css。説明用の端末枠はそのまま残す。 */
 
 .statusbar { height: 50px; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: space-between;
              padding: 0 30px 6px; font-size: 14px; font-weight: 600; }
 .statusbar .icons { display: flex; gap: 5px; align-items: center; }
 .view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.app-layout, .workspace { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.screen-title, .nav-brand { display: none; }
 .appbar { flex-shrink: 0; padding: 4px 20px 12px; display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
 .wordmark { font-size: 19px; font-weight: 700; letter-spacing: .08em; }
 .wordmark span { color: var(--brand); }

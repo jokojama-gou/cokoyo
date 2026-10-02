@@ -1,4 +1,4 @@
-// スマホの画面（枠・ステータスバー・画面の切り替え・タブ・シート・トースト）
+// アプリの画面（説明用の端末枠・画面の切り替え・ナビ・シート・トースト）
 
 import { useEffect, useState } from 'react';
 import { useApp, type Tab } from '../app/AppContext';
@@ -32,19 +32,23 @@ function AppScreens() {
   const { tab, setTab, friends, mapOpen } = useApp();
   const badge = friends ? friends.requests.incoming.length + friends.friends.filter((f) => f.best === 'incoming').length : 0;
   return (
-    <>
+    <div className={`app-layout app-layout-${tab}`}>
       <div className="appbar">
         <div className="wordmark">COK<span>O</span>YO</div>
+        <h1 className="screen-title">{TABS.find((item) => item.id === tab)?.label}</h1>
         <TotalPoints />
       </div>
-      {/* ホームのフィールドはスクロールさせず、下のカードだけをスクロールする */}
-      {/* 地図を開いている間は外す（右上の「地図」ボタンが地図の上に残るため） */}
-      {tab === 'home' && !mapOpen && <FieldView />}
-      {/* タブごとに作り直して、スクロール位置を一番上に戻す */}
-      <div className={`content${tab === 'home' ? ' under-field' : ''}`} key={tab}>
-        {tab === 'home' ? <Home /> : tab === 'friends' ? <Friends /> : <Settings />}
+      {/* タブごとに作り直して、スマホ・PCどちらもスクロール位置を戻す */}
+      <div className={`workspace workspace-${tab}`} key={tab}>
+        {/* スマホはフィールドを固定し、PCではカードと一緒に並べてスクロールする */}
+        {/* 地図の上に「地図」ボタンを残さないよう、地図表示中は外す */}
+        {tab === 'home' && !mapOpen && <FieldView />}
+        <div className={`content content-${tab}${tab === 'home' ? ' under-field' : ''}`}>
+          {tab === 'home' ? <Home /> : tab === 'friends' ? <Friends /> : <Settings />}
+        </div>
       </div>
       <nav className="tabs" aria-label="画面の切り替え">
+        <div className="nav-brand wordmark" aria-hidden="true">COK<span>O</span>YO</div>
         {TABS.map(({ id, label, icon: TabIcon }) => (
           <button key={id} className={tab === id ? 'on' : ''} onClick={() => setTab(id)} aria-current={tab === id ? 'page' : undefined}>
             <span className="tabicon"><TabIcon />{id === 'friends' && badge > 0 && <span className="dot">{badge}</span>}</span>
@@ -52,7 +56,7 @@ function AppScreens() {
           </button>
         ))}
       </nav>
-    </>
+    </div>
   );
 }
 

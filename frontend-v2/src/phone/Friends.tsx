@@ -41,14 +41,18 @@ export function Friends() {
   const hasRequests = requests.incoming.length + incomingBest.length > 0;
 
   return (
-    <>
-      <button className="btn btn-primary btn-add" onClick={() => openAddSheet()}><Icon.Plus />フレンドを追加</button>
+    <div className="friends-grid">
+      <div className="page-section friends-add">
+        <button className="btn btn-primary btn-add" onClick={() => openAddSheet()}><Icon.Plus />フレンドを追加</button>
+      </div>
 
-      <div className="sec"><h3>あなたの見え方</h3></div>
-      <HideCard />
+      <section className="page-section friends-privacy">
+        <div className="sec"><h3>あなたの見え方</h3></div>
+        <HideCard />
+      </section>
 
       {hasRequests && (
-        <>
+        <section className="page-section friends-requests">
           <div className="sec"><h3>届いている申請</h3><span>{requests.incoming.length + incomingBest.length}件</span></div>
           <div className="card">
             {requests.incoming.map((r) => (
@@ -72,69 +76,73 @@ export function Friends() {
               </div>
             ))}
           </div>
-        </>
+        </section>
       )}
 
-      <div className="sec"><h3>フレンド</h3><span>{friends.friends.length}人</span></div>
-      <div className="card">
-        {friends.friends.length === 0 && <div className="pt-empty">まだフレンドがいません。「フレンドを追加」から始めましょう</div>}
-        {friends.friends.map((f) => {
-          const open = expanded === f.userId;
-          const armed = armedBlock === f.userId;
-          return (
-            <div className={`frow${open ? ' open' : ''}`} key={f.userId}>
-              <button className="frow-head" aria-expanded={open}
-                onClick={() => { setExpanded(open ? null : f.userId); setArmedBlock(null); }}>
-                <Avatar userId={f.userId} name={f.displayName} avatar={f.avatar} />
-                <span className="fbody">
-                  <span className="fname">
-                    {f.displayName}
-                    {f.best === 'best' && <span className="star">ベスト</span>}
-                    {f.best === 'outgoing' && <span className="pending">ベスト申請中</span>}
-                    {f.best === 'incoming' && <span className="pending">申請が届いています</span>}
+      <section className="page-section friends-main">
+        <div className="sec"><h3>フレンド</h3><span>{friends.friends.length}人</span></div>
+        <div className="card">
+          {friends.friends.length === 0 && <div className="pt-empty">まだフレンドがいません。「フレンドを追加」から始めましょう</div>}
+          {friends.friends.map((f) => {
+            const open = expanded === f.userId;
+            const armed = armedBlock === f.userId;
+            return (
+              <div className={`frow${open ? ' open' : ''}`} key={f.userId}>
+                <button className="frow-head" aria-expanded={open}
+                  onClick={() => { setExpanded(open ? null : f.userId); setArmedBlock(null); }}>
+                  <Avatar userId={f.userId} name={f.displayName} avatar={f.avatar} />
+                  <span className="fbody">
+                    <span className="fname">
+                      {f.displayName}
+                      {f.best === 'best' && <span className="star">ベスト</span>}
+                      {f.best === 'outgoing' && <span className="pending">ベスト申請中</span>}
+                      {f.best === 'incoming' && <span className="pending">申請が届いています</span>}
+                    </span>
+                    <span className="fmeta">{fullDate(f.friendsSince)}からフレンド</span>
                   </span>
-                  <span className="fmeta">{fullDate(f.friendsSince)}からフレンド</span>
-                </span>
-                <span className="chev"><Icon.Chevron /></span>
-              </button>
-              {open && (
-                <div className="frow-body">
-                  {f.best === 'none' && (
-                    <>
-                      <button className="row-btn" onClick={() => void requestBest(f, '申請')}>ベストフレンドを申請</button>
-                      <p className="row-note">相手が承認すると、お互いにどの建物にいるかまで見えるようになります</p>
-                    </>
-                  )}
-                  {f.best === 'outgoing' && <button className="row-btn" onClick={() => void endBest(f, '取り消し')}>ベストフレンドの申請を取り消す</button>}
-                  {f.best === 'incoming' && <button className="row-btn best" onClick={() => void requestBest(f, '承認')}>ベストフレンドの申請を承認</button>}
-                  {f.best === 'best' && (
-                    <>
-                      <button className="row-btn" onClick={() => void endBest(f, 'やめる')}>ベストフレンドをやめる</button>
-                      <p className="row-note">やめると、お互いに「キャンパスにいるか」だけが見える状態に戻ります</p>
-                    </>
-                  )}
-                  {armed ? (
-                    <div className="confirm">
-                      <p>{f.displayName}さんをブロックしますか？ お互いの在校が見えなくなります。相手には知らせず、相手からは「いません」に見えます。</p>
-                      <div className="confirm-actions">
-                        <button className="mini-btn danger" onClick={() => void block(f)}>ブロックする</button>
-                        <button className="mini-btn" onClick={() => setArmedBlock(null)}>やめる</button>
+                  <span className="chev"><Icon.Chevron /></span>
+                </button>
+                {open && (
+                  <div className="frow-body">
+                    {f.best === 'none' && (
+                      <>
+                        <button className="row-btn" onClick={() => void requestBest(f, '申請')}>ベストフレンドを申請</button>
+                        <p className="row-note">相手が承認すると、お互いにどの建物にいるかまで見えるようになります</p>
+                      </>
+                    )}
+                    {f.best === 'outgoing' && <button className="row-btn" onClick={() => void endBest(f, '取り消し')}>ベストフレンドの申請を取り消す</button>}
+                    {f.best === 'incoming' && <button className="row-btn best" onClick={() => void requestBest(f, '承認')}>ベストフレンドの申請を承認</button>}
+                    {f.best === 'best' && (
+                      <>
+                        <button className="row-btn" onClick={() => void endBest(f, 'やめる')}>ベストフレンドをやめる</button>
+                        <p className="row-note">やめると、お互いに「キャンパスにいるか」だけが見える状態に戻ります</p>
+                      </>
+                    )}
+                    {armed ? (
+                      <div className="confirm">
+                        <p>{f.displayName}さんをブロックしますか？ お互いの在校が見えなくなります。相手には知らせず、相手からは「いません」に見えます。</p>
+                        <div className="confirm-actions">
+                          <button className="mini-btn danger" onClick={() => void block(f)}>ブロックする</button>
+                          <button className="mini-btn" onClick={() => setArmedBlock(null)}>やめる</button>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <button className="row-btn danger" onClick={() => setArmedBlock(f.userId)}>ブロック</button>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                    ) : (
+                      <button className="row-btn danger" onClick={() => setArmedBlock(f.userId)}>ブロック</button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
 
-      <Suggestions />
+      <section className="page-section friends-suggestions">
+        <Suggestions />
+      </section>
 
       {requests.outgoing.length > 0 && (
-        <>
+        <section className="page-section friends-outgoing">
           <div className="sec"><h3>承認待ち</h3><span>{requests.outgoing.length}件</span></div>
           <div className="card">
             {requests.outgoing.map((r) => (
@@ -147,25 +155,27 @@ export function Friends() {
               </div>
             ))}
           </div>
-        </>
+        </section>
       )}
 
-      {blocked.length > 0 && (
-        <>
-          <div className="sec"><h3>ブロック中</h3><span>{blocked.length}人</span></div>
-          <div className="card">
-            {blocked.map((b) => (
-              <div className="req" key={b.userId}>
-                <Avatar userId={b.userId} name={b.displayName} avatar={b.avatar} off />
-                <div className="fbody"><div className="fname">{b.displayName}</div><div className="fmeta">お互いの在校が見えません</div></div>
-                <div className="req-actions"><button className="mini-btn" onClick={() => void unblock(b.userId, b.displayName)}>解除</button></div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+      <section className="page-section friends-blocked">
+        {blocked.length > 0 && (
+          <>
+            <div className="sec"><h3>ブロック中</h3><span>{blocked.length}人</span></div>
+            <div className="card">
+              {blocked.map((b) => (
+                <div className="req" key={b.userId}>
+                  <Avatar userId={b.userId} name={b.displayName} avatar={b.avatar} off />
+                  <div className="fbody"><div className="fname">{b.displayName}</div><div className="fmeta">お互いの在校が見えません</div></div>
+                  <div className="req-actions"><button className="mini-btn" onClick={() => void unblock(b.userId, b.displayName)}>解除</button></div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
-      <p className="footnote">ブロックしても、フレンドからは消えません。解除すると元のフレンドに戻ります。</p>
-    </>
+        <p className="footnote">ブロックしても、フレンドからは消えません。解除すると元のフレンドに戻ります。</p>
+      </section>
+    </div>
   );
 }

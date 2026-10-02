@@ -118,49 +118,51 @@ export function CampusMap() {
           </div>
         </div>
 
-        {pickedBuilding && (
-          <div className="card map-card">
-            <div className="map-card-head">
-              <span className="map-glyph">{pickedBuilding.glyph}</span>
-              <div>
-                <div className="map-card-name">{pickedBuilding.label}</div>
-                <div className="map-card-sub">{here.length ? `${here.length}人がここに` : 'だれもいません'}</div>
+        <div className="map-details">
+          {pickedBuilding && (
+            <div className="card map-card">
+              <div className="map-card-head">
+                <span className="map-glyph">{pickedBuilding.glyph}</span>
+                <div>
+                  <div className="map-card-name">{pickedBuilding.label}</div>
+                  <div className="map-card-sub">{here.length ? `${here.length}人がここに` : 'だれもいません'}</div>
+                </div>
               </div>
-            </div>
-            {here.map((p) => (
-              <div className="friend" key={p.id}>
-                <SelfOrAvatar pin={p} />
-                <div className="fbody"><div className="fname">{p.name}</div></div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {somewhere.length > 0 && (
-          <>
-            <div className="sec"><h3>キャンパスのどこか</h3><span>{somewhere.length}人</span></div>
-            <div className="card">
-              {somewhere.map((p) => (
+              {here.map((p) => (
                 <div className="friend" key={p.id}>
                   <SelfOrAvatar pin={p} />
-                  <div className="fbody">
-                    <div className="fname">{p.name}</div>
-                    <div className="fmeta">建物までは、ベストフレンド同士だと見えます</div>
-                  </div>
+                  <div className="fbody"><div className="fname">{p.name}</div></div>
                 </div>
               ))}
             </div>
-          </>
-        )}
+          )}
 
-        {!lc && (
-          <div className="card map-empty">
-            <p>「ポイント獲得（在校確認）」を押すと、いまキャンパスにいる人が地図に出ます。</p>
-            <button className="btn btn-primary" onClick={() => void check()} disabled={checking}>
-              {checking ? '確認しています…' : 'ここで確認する'}
-            </button>
-          </div>
-        )}
+          {somewhere.length > 0 && (
+            <section className="page-section map-somewhere">
+              <div className="sec"><h3>キャンパスのどこか</h3><span>{somewhere.length}人</span></div>
+              <div className="card">
+                {somewhere.map((p) => (
+                  <div className="friend" key={p.id}>
+                    <SelfOrAvatar pin={p} />
+                    <div className="fbody">
+                      <div className="fname">{p.name}</div>
+                      <div className="fmeta">建物までは、ベストフレンド同士だと見えます</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {!lc && (
+            <div className="card map-empty">
+              <p>「ポイント獲得（在校確認）」を押すと、いまキャンパスにいる人が地図に出ます。</p>
+              <button className="btn btn-primary" onClick={() => void check()} disabled={checking}>
+                {checking ? '確認しています…' : 'ここで確認する'}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

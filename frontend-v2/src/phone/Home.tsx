@@ -31,67 +31,73 @@ export function Home() {
 
   return (
     <>
-      <InstallCard />
+      <section className="home-primary" aria-label="在校確認">
+        <InstallCard />
 
-      <div className="card check-card">
-        <div className="check-head">
-          <div className="kick"><span className={`pulse${fresh && present ? ' live' : ''}`} /><span>{kick}</span></div>
-          {me.hidden && <span className="hidechip">かくれんぼ中</span>}
+        <div className="card check-card">
+          <div className="check-head">
+            <div className="kick"><span className={`pulse${fresh && present ? ' live' : ''}`} /><span>{kick}</span></div>
+            {me.hidden && <span className="hidechip">かくれんぼ中</span>}
+          </div>
+          <div className="check-title">{title}<span className="check-sub">{sub}</span></div>
+          <button className="btn btn-primary btn-check" onClick={() => void check()} disabled={checking}>
+            {checking ? '確認しています…' : <>ポイント獲得<span className="btn-sub">（在校確認）</span></>}
+          </button>
+          <p className="btn-hint">{hint}</p>
         </div>
-        <div className="check-title">{title}<span className="check-sub">{sub}</span></div>
-        <button className="btn btn-primary btn-check" onClick={() => void check()} disabled={checking}>
-          {checking ? '確認しています…' : <>ポイント獲得<span className="btn-sub">（在校確認）</span></>}
-        </button>
-        <p className="btn-hint">{hint}</p>
-      </div>
+      </section>
 
-      <div className="sec"><h3>フレンド</h3><span>{lc ? `${when(lc.checkedAt)} 時点・${liveCount}人がキャンパスに` : '未確認'}</span></div>
-      <div className="card">
-        {sorted.length === 0 && (
-          <>
-            <div className="pt-empty">まだフレンドがいません</div>
-            <button className="btn btn-quiet" onClick={() => openAddSheet()}>フレンドを追加</button>
-          </>
-        )}
-        {sorted.map((f) => {
-          const r = results.get(f.userId);
-          const a = awardedNow.get(f.userId);
-          let chip = null;
-          if (r?.present) {
-            if (a) {
-              chip = a.kind === 'first' ? <span className="chip first">+{a.pts} はじめて</span>
-                : a.kind === 'reunion' ? <span className="chip reunion">+{a.pts} {a.days}日ぶり</span>
-                : <span className="chip normal">+{a.pts}</span>;
-            } else if (fresh && matchedToday.has(f.userId)) {
-              chip = <span className="chip done">獲得済み</span>;
+      <section className="home-friends" aria-label="フレンドの在校">
+        <div className="sec"><h3>フレンド</h3><span>{lc ? `${when(lc.checkedAt)} 時点・${liveCount}人がキャンパスに` : '未確認'}</span></div>
+        <div className="card">
+          {sorted.length === 0 && (
+            <>
+              <div className="pt-empty">まだフレンドがいません</div>
+              <button className="btn btn-quiet" onClick={() => openAddSheet()}>フレンドを追加</button>
+            </>
+          )}
+          {sorted.map((f) => {
+            const r = results.get(f.userId);
+            const a = awardedNow.get(f.userId);
+            let chip = null;
+            if (r?.present) {
+              if (a) {
+                chip = a.kind === 'first' ? <span className="chip first">+{a.pts} はじめて</span>
+                  : a.kind === 'reunion' ? <span className="chip reunion">+{a.pts} {a.days}日ぶり</span>
+                  : <span className="chip normal">+{a.pts}</span>;
+              } else if (fresh && matchedToday.has(f.userId)) {
+                chip = <span className="chip done">獲得済み</span>;
+              }
             }
-          }
-          const meta = !r ? '未確認' : r.present ? (r.building ? `${r.building}にいます` : 'キャンパスにいます') : 'いません';
-          return (
-            <div className="friend" key={f.userId}>
-              <Avatar userId={f.userId} name={f.displayName} avatar={f.avatar} on={!!r?.present} />
-              <div className="fbody">
-                <div className="fname">{f.displayName}{f.best === 'best' && <span className="star">ベスト</span>}</div>
-                <div className={`fmeta${r?.present ? ' live' : ''}`}>{meta}</div>
+            const meta = !r ? '未確認' : r.present ? (r.building ? `${r.building}にいます` : 'キャンパスにいます') : 'いません';
+            return (
+              <div className="friend" key={f.userId}>
+                <Avatar userId={f.userId} name={f.displayName} avatar={f.avatar} on={!!r?.present} />
+                <div className="fbody">
+                  <div className="fname">{f.displayName}{f.best === 'best' && <span className="star">ベスト</span>}</div>
+                  <div className={`fmeta${r?.present ? ' live' : ''}`}>{meta}</div>
+                </div>
+                {chip}
               </div>
-              {chip}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
-      {liveCount > 0 && <p className="footnote tap-hint">上のスライムを連打すると、そのフレンドに「つんつん」が届きます</p>}
+        {liveCount > 0 && <p className="footnote tap-hint">上のスライムを連打すると、そのフレンドに「つんつん」が届きます</p>}
+      </section>
 
-      <div className="sec"><h3>今日の獲得</h3></div>
-      <div className="card">
-        <div className="pt-head"><span className="pt-label">今日</span><span className="pt-value">{today.total.toLocaleString()}<small>pt</small></span></div>
-        {today.items.length
-          ? today.items.map((i, n) => <div className="pt-row" key={n}><span>{i.label}</span><span className="n">+{i.pts.toLocaleString()}</span></div>)
-          : <div className="pt-empty">キャンパスで「ポイント獲得」を押すと入ります</div>}
-        <div className="pt-foot"><span>累計</span><span>{points.total.toLocaleString()} pt</span></div>
-      </div>
+      <section className="home-summary" aria-label="ポイントと公開設定">
+        <div className="sec"><h3>今日の獲得</h3></div>
+        <div className="card">
+          <div className="pt-head"><span className="pt-label">今日</span><span className="pt-value">{today.total.toLocaleString()}<small>pt</small></span></div>
+          {today.items.length
+            ? today.items.map((i, n) => <div className="pt-row" key={n}><span>{i.label}</span><span className="n">+{i.pts.toLocaleString()}</span></div>)
+            : <div className="pt-empty">キャンパスで「ポイント獲得」を押すと入ります</div>}
+          <div className="pt-foot"><span>累計</span><span>{points.total.toLocaleString()} pt</span></div>
+        </div>
 
-      <HideCard />
+        <HideCard />
+      </section>
     </>
   );
 }
