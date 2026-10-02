@@ -6,6 +6,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { inAppBrowser } from './browser';
+import { pwaEnabled } from './pwa';
 
 export type InstallWay = 'prompt' | 'ios' | 'manual';
 
@@ -16,6 +17,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 /** Chrome がくれた「追加できます」の知らせ。React が動く前に来ることがあるので、ここで預かる */
 let deferred: BeforeInstallPromptEvent | null = null;
+let installed = false;
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((fn) => fn());
 
@@ -25,7 +27,8 @@ if (typeof window !== 'undefined') {
     deferred = e as BeforeInstallPromptEvent;
     emit();
   });
-  window.addEventListener('appinstalled', () => { deferred = null; emit(); });
+  window.addEventListener('appinstalled', () => { deferred = null; installed = true; emit(); });
+  window.matchMedia?.('(display-mode: standalone)').addEventListener('change', emit);
 }
 
 /** すでにホーム画面のアプリとして開いているか */
@@ -61,7 +64,7 @@ export function useInstall() {
    * LINE やインスタの中のブラウザからはホーム画面に追加できないので、そこでも出さない
    * （先に「ふだんのブラウザで開いてください」の案内を読んでもらう）。
    */
-  const canOffer = !isStandalone() && !skipped && !inAppBrowser()
+  const canOffer = pwaEnabled && !installed && !isStandalone() && !skipped && !inAppBrowser()
     && (way === 'prompt' || (way === 'ios' && !!navigator.maxTouchPoints) || isAndroid());
 
   /** Chrome の追加ダイアログを出す。追加されたら true */
@@ -70,8 +73,10 @@ export function useInstall() {
     const e = deferred;
     deferred = null;
     emit();
-    await e.prompt();
-    return (await e.userChoice).outcome === 'accepted';
+    try {
+      await e.prompt();
+      return (await e.userChoice).outcome === 'accepted';
+    } catch { return false; }
   }, []);
 
   const skip = useCallback(() => {

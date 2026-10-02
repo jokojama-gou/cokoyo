@@ -54,7 +54,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-v
    高さは dvh。iOS ではアドレスバーの出入りで vh がずれる。 */
 body.plain { padding: 0; height: 100dvh; overflow: hidden; overscroll-behavior: none; }
 body.plain .device { width: 100%; max-width: none; height: 100dvh; padding: 0; border-radius: 0; background: var(--page); box-shadow: none; }
-body.plain .screen { border-radius: 0; }
+body.plain .screen { border-radius: 0; padding-top: env(safe-area-inset-top); }
 body.plain .statusbar,
 body.plain .device-caption { display: none; }
 /* ホームバーのある機種で、タブが下端に潜らないように */
@@ -71,6 +71,8 @@ body.plain .sheet { border-radius: 28px 28px 0 0; padding-bottom: max(22px, env(
              padding: 0 30px 6px; font-size: 14px; font-weight: 600; }
 .statusbar .icons { display: flex; gap: 5px; align-items: center; }
 .view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.pwa-notice { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 10px 16px; background: var(--brand-tint); color: var(--ink-2); font-size: 12px; }
 .appbar { flex-shrink: 0; padding: 4px 20px 12px; display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
 .wordmark { font-size: 19px; font-weight: 700; letter-spacing: .08em; }
 .wordmark span { color: var(--brand); }

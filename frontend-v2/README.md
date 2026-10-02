@@ -27,7 +27,21 @@ npm run typecheck
 
 `VITE_SHELL=app` はアプリのみ、既定の `explain` はスマホ枠とデモ・通信ログを表示します。本番は `/` が実データのアプリ、`/explain/` が実データの説明画面（管理用パスワードが必要）、`/test/` が模擬データ、`/admin/` が管理画面（同じパスワード）です。説明画面の DB 表は全行を表示しますが、メール・Google ID・認証情報・MAC 原文・共有キーを除外します。
 
-PWA はネットワーク優先で、`/api/` をキャッシュしません。カメラとサービスワーカーは HTTPS または localhost が必要です。
+## スマホ PWA 版（`codex/mobile-pwa`）
+
+```sh
+npm run build:pwa  # アプリだけの画面・実 API /api 接続で dist/ を生成
+npm run preview   # ビルドした版を localhost で確認
+```
+
+本番の `VITE_API_BASE_URL=/api VITE_SHELL=app npm run build` でも同じ PWA が作られ、既存の `deploy/update.sh` をそのまま使えます。カメラ・PWA は HTTPS または localhost が必要です。開発サーバーと説明用・模擬デモのビルドでは、サービスワーカーを登録しません。
+
+- Android はホーム画面の追加案内、iPhone は共有メニューの「ホーム画面に追加」からインストールします。起動先はアプリ画面で、縦向きと上下のセーフエリアに対応しています。
+- 最初のオンライン起動で HTML・JS・CSS・アイコン・利用規約などをまとめて保存します。その完了後はオフラインでも画面を起動でき、招待リンクのクエリも受け取れます。ログイン・在校確認・ポイント・フレンド情報の取得には通信が必要です。オフライン状態は画面に表示します。
+- API・OAuth・管理画面・説明用ページと個人データは PWA キャッシュに保存しません。外部フォントが使えないときは端末のフォントで表示します。
+- 新版の全ファイルが揃うと「更新する」を表示します。押すと開いている同じアプリのタブも再読み込みし、HTML と JS の版を揃えます。取得に失敗した更新は有効にせず、前の版を使い続けます。
+
+`npm run test:pwa` はビルド後、Playwright でオフライン起動・API 非キャッシュ・更新失敗時の継続・複数タブの更新を確認します。初回は `npx playwright install chromium` で検証用ブラウザを用意します。インストール済み Edge を使う場合、PowerShell では `$env:PWA_BROWSER_CHANNEL='msedge'; npm.cmd run test:pwa` を実行できます。iPhone/Android 実機でのホーム画面追加と Google ログインは別途確認してください。
 
 招待リンクには `openExternalBrowser=1` を付け、LINE から通常のブラウザで開きます。アプリ内ブラウザでは Google ログイン前に通常のブラウザで開く案内を表示します。画面復帰時と QR 表示中にはフレンド状態を裏で更新します。
 

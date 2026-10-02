@@ -67,7 +67,9 @@ async function request<T>(method: string, path: string, body?: Record<string, un
       json = status === 204 ? null : await res.json().catch(() => null);
     } catch (e) {
       if (!silent) push({ method, path, body, status: 0, json: { error: { message: String((e as Error).message ?? e) } }, withToken: withSession });
-      throw new ApiError('バックエンドに接続できません。同じサイトのAPI設定を確認してください', 0);
+      throw new ApiError(navigator.onLine
+        ? 'バックエンドに接続できません。同じサイトのAPI設定を確認してください'
+        : 'オフラインです。インターネットに接続してから、もう一度試してください', 0);
     }
   }
 

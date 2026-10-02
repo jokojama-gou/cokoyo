@@ -14,6 +14,7 @@ import { inAppBrowser } from '../app/browser';
 import { InAppNotice } from './InAppNotice';
 import { Settings } from './Settings';
 import { TotalPoints } from './TotalPoints';
+import { PwaNotice } from './PwaNotice';
 import { Icon } from './ui';
 
 function Clock() {
@@ -69,6 +70,7 @@ export function Phone() {
               <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3.2" stroke="currentColor" opacity=".4" /><rect x="2" y="2" width="16" height="8" rx="2" fill="currentColor" /><path d="M23 4v4a2.2 2.2 0 0 0 0-4z" fill="currentColor" opacity=".4" /></svg>
             </span>
           </div>
+          <PwaNotice />
           <div className="view">
             {view === 'loading' && <div className="center-note">読み込み中…</div>}
             {view === 'login' && (
