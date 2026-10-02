@@ -1,0 +1,130 @@
+.pyxel-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px;
+  background: rgb(48 35 29 / 70%);
+  overscroll-behavior: contain;
+}
+
+.pyxel-dialog {
+  --ink: #392a23;
+  --ink-2: #695041;
+  --muted: #796858;
+  --brand: #e97535;
+  --brand-dark: #bd5125;
+  --brand-tint: #ffe0b0;
+  --card: #fff9e8;
+  --line: #b88b67;
+  --line-soft: #f2ddba;
+  --danger: #b34134;
+  width: min(100%, 480px);
+  max-height: calc(100dvh - 48px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border: 4px solid #392a23;
+  box-shadow: 6px 6px 0 #e97535;
+  background: var(--card);
+  color: var(--ink);
+  font-family: "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.pyxel-dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border-bottom: 4px solid #392a23;
+  background: #e97535;
+}
+
+.pyxel-dialog-heading h2 { margin: 0; font-size: 17px; line-height: 1.5; font-weight: 800; }
+.pyxel-dialog-body { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 18px; }
+.pyxel-dialog-body > :first-child { margin-top: 0; }
+.pyxel-dialog-body p { overflow-wrap: anywhere; }
+.pyxel-dialog-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 2px solid #392a23;
+  border-radius: 0;
+  background: #fff9e8;
+  color: #392a23;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pyxel-native-actions { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; margin-top: 24px; }
+.pyxel-native-button {
+  flex: 1;
+  min-height: 44px;
+  min-width: 100px;
+  padding: 10px 14px;
+  border: 2px solid #392a23;
+  border-radius: 0;
+  box-shadow: 3px 3px 0 #392a23;
+  background: #f2ddba;
+  color: #392a23;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pyxel-native-button.primary { background: #e97535; color: #392a23; }
+.pyxel-native-button.danger { background: #b34134; color: #fff9e8; }
+.pyxel-dialog button:disabled { opacity: .55; cursor: default; }
+.pyxel-dialog :is(button, a, input, summary):focus-visible { outline: 3px solid #23646d; outline-offset: 3px; }
+.pyxel-dialog .field { border: 2px solid #b88b67; border-radius: 0; background: #fffdf5; min-height: 44px; font-size: 16px; }
+.pyxel-dialog .field:focus { border-color: #23646d; box-shadow: none; outline: 2px solid #23646d; outline-offset: 2px; }
+.pyxel-dialog .field-label { font-size: 13px; font-weight: 700; }
+.pyxel-dialog .row-note { font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+.pyxel-dialog :is(.btn, .mini-btn, .seg, .seg button, .inapp, .sm, .sm-row, .crop-stage, .inst-card, .done-mark) { border-radius: 0; }
+.pyxel-dialog :is(.btn, .mini-btn) { border: 2px solid #392a23; box-shadow: 3px 3px 0 #392a23; min-height: 44px; text-align: center; }
+.pyxel-dialog :is(.btn-primary, .mini-btn.primary) { background: #e97535; color: #392a23; }
+.pyxel-dialog :is(.btn-quiet, .mini-btn) { background: #f2ddba; color: #392a23; }
+.pyxel-dialog .btn-primary:hover:not(:disabled) { background: #f68d46; }
+.pyxel-dialog .btn:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #392a23; }
+.pyxel-dialog .content.ob { padding: 0; overflow: visible; }
+.pyxel-dialog .ob-back { position: static; background: var(--card); }
+.pyxel-dialog .ob-step { margin-top: 0; }
+.pyxel-dialog .ob-title { font-size: 19px; }
+.pyxel-dialog .ob-done { min-height: 250px; }
+.pyxel-dialog .done-mark { margin: 4px auto 20px; }
+.pyxel-dialog .manual { margin-top: 0; }
+.pyxel-dialog .manual summary { min-height: 44px; display: list-item; align-content: center; }
+.pyxel-dialog .seg { border: 2px solid #b88b67; padding: 2px; }
+.pyxel-dialog .seg button { min-height: 44px; color: #695041; }
+.pyxel-dialog .seg button.on { background: #ffe0b0; color: #392a23; box-shadow: none; outline: 1px solid #b88b67; }
+.pyxel-dialog .steps li::before { border-radius: 0; }
+.pyxel-dialog .sm { border: 2px solid #b88b67; background: #f2ddba; }
+.pyxel-dialog .sm-cap { color: #695041; }
+.pyxel-dialog .sm-row { flex-wrap: wrap; background: #fff9e8; }
+.pyxel-dialog .sm-val { color: #695041; white-space: normal; overflow-wrap: anywhere; }
+.pyxel-dialog .avatar-edit { margin-top: 0; padding-top: 0; border-top: 0; }
+.pyxel-dialog .crop-stage { max-width: 100%; }
+.pyxel-dialog .crop-mask { border-radius: 50%; }
+.pyxel-dialog .crop-zoom input { min-height: 44px; }
+.pyxel-dialog .inapp { margin-bottom: 0; border: 2px solid #b88b67; background: #ffe0b0; }
+.pyxel-dialog .inst-card { border: 2px solid #b88b67; }
+
+@media (max-width: 520px) {
+  .pyxel-dialog-backdrop { padding: 16px; }
+  .pyxel-dialog { max-height: calc(100dvh - 32px); }
+  .pyxel-dialog-body { padding: 14px; }
+  .pyxel-dialog-heading { padding: 8px 12px; }
+  .pyxel-native-actions { gap: 10px; }
+}

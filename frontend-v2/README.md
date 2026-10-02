@@ -1,5 +1,43 @@
 # COKOYO フロントエンド
 
+## Pyxel UI 実験版（`codex/pyxel-ui`）
+
+このブランチは、COKOYO の主画面を Python / Pyxel で描き直す実験版です。ホーム、フレンド、設定、キャンパスの建物一覧を Pyxel のキャンバスに描画します。キャラクターを歩かせるゲーム操作はありません。既存の React 版と完全に同じ表示・演出にはしていません。
+
+Node.js 24 以上で、`frontend-v2/` から起動します。
+
+```sh
+npm ci
+npm run dev:pyxel     # http://localhost:5173/（既定のポート）
+npm run build:pyxel   # 型検査と Pyxel 版の dist/ ビルド
+```
+
+接続先を指定しなければ模擬バックエンドです。実 API の開発環境ではバックエンドを起動し、`http://localhost:5173/?api=/api` を開きます。実 API 向けのビルドは、PowerShell では次のように指定できます。公開時は `/api` を既存バックエンドへ転送してください。
+
+```powershell
+$env:VITE_API_BASE_URL = "/api"
+$env:VITE_SHELL = "app"
+npm run build
+```
+
+描画は `public/pyxel/ui.py`、ブラウザ内の起動処理は `public/pyxel/runtime.html` です。`src/pyxel/PyxelUI.tsx` が既存の `AppContext` と API を使い、同一オリジンの `postMessage` で表示状態と操作を受け渡します。認証、在校確認、フレンド関係の処理は既存の API 契約を使います。
+
+日本語 IME による入力、初回登録、MAC アドレスの入力、写真の選択・切り抜き、QR・カメラ、共有、問い合わせには既存の HTML UI を重ねます。主画面のアバターはピクセル表示です。保存した写真データは保持し、写真の設定画面では確認・変更できます。説明・テスト用の React 画面とデモパネルも残しており、開発サーバーでは `?shell=explain` で切り替えられます。
+
+ブラウザ実行環境は Pyxel **2.8.7** / Pyodide **0.29.3** を使い、固定版の外部 CDN を読み込みます。初回起動にはネット接続が必要で、この版ではオフライン動作を保証しません。PWA 対応の実験は別ブランチ `codex/mobile-pwa` です。日本語ビットマップフォントは `public/pyxel/fonts/umplus_j10r.bdf`、出典とライセンスは同じディレクトリの `NOTICE.txt` と `LICENSE_MPLUS.txt` にあります。
+
+実ブラウザの確認用スクリプトは `tools/check-pyxel.mjs` です。インストール済みの Microsoft Edge を Playwright から起動し、Pyxel の実行環境とアプリ操作を確認します。別のターミナルでサーバーを起動してから実行してください（使用中のポートに合わせて URL を指定します）。
+
+```sh
+npm run dev:pyxel -- --host 127.0.0.1 --port 5175
+```
+
+```sh
+node tools/check-pyxel.mjs "http://127.0.0.1:5175/?shell=app"
+```
+
+結果とスクリーンショットはリポジトリの `artifacts/pyxel-ui/` に出力されます。以下は既存 React 画面と共通機能の説明です。
+
 React + Vite + TypeScript のアプリです。`keio.jp` Google ログイン後、表示名と最初の MAC を登録し、設定から最大 5 台の端末とプロフィール画像を管理します。Google の写真が取得できれば初期アイコンになり、利用者による変更・削除は保持されます。フレンドの在校、ポイント、地図、かくれんぼを表示します。フレンド追加は QR・招待リンク・共有キーを使います。X にはアプリのページだけを出し、ストーリーズの画像にはフレンド申請用の QR（招待リンクに `from=story` の印）を載せます。招待リンクを開いたときは、相手の名前を出して「申請しますか？」と確かめてから申請します（`src/phone/InviteConfirm.tsx`。はじめての人は登録が終わったところで出る）。QR はカメラのほか、写真（スクショ）からも読めます。写真やストーリーズの QR から読んだときは、目の前の相手とは限らないので申請になります。
 
 ## 起動

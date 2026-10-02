@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>COKOYO · Pyxel</title>
+    <style>
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #f0ede8; }
+      #pyxel-screen { position: fixed !important; inset: 0 !important; width: 100% !important; height: 100% !important; background: #f0ede8 !important; }
+      #canvas { position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; image-rendering: pixelated; touch-action: manipulation; }
+      #loading { position: fixed; inset: 0; z-index: 2; display: grid; place-content: center; margin: 0; background: #f0ede8; color: #6f6a67; font: 13px system-ui, sans-serif; }
+      #loading[hidden] { display: none; }
+      pyxel-run { display: none; }
+      #pyxel-logo, #pyxel-prompt, [id^="pyxel-gamepad-"] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <p id="loading" role="status">COKOYOを読み込んでいます…</p>
+    <div id="pyxel-screen"></div>
+    <script>
+      (() => {
+        'use strict';
+
+        const origin = location.origin;
+        const loading = document.getElementById('loading');
+        let state = {};
+        let ready = false;
+        let failureReported = false;
+        let watchdog;
+
+        const send = (type, payload) => {
+          if (window.parent !== window) {
+            window.parent.postMessage({ source: 'cokoyo-pyxel', type, payload }, origin);
+          }
+        };
+
+        const reportError = (error) => {
+          if (failureReported) return;
+          failureReported = true;
+          clearTimeout(watchdog);
+          const detail = error instanceof Error ? error.message : String(error || 'Unknown runtime error');
+          loading.hidden = false;
+          loading.textContent = '画面を読み込めませんでした。もう一度お試しください。';
+          send('error', { message: detail });
+        };
+
+        window.addEventListener('message', (event) => {
+          if (event.origin !== origin || event.source !== window.parent) return;
+          const message = event.data;
+          if (message?.source !== 'cokoyo-host' || message.type !== 'state') return;
+          if (!message.payload || typeof message.payload !== 'object' || Array.isArray(message.payload)) return;
+          state = message.payload;
+        });
+
+        // Strings cross the Python / JavaScript boundary without keeping PyProxy objects alive.
+        window.cokoyoBridge = Object.freeze({
+          readState: () => JSON.stringify(state),
+          emit: (type, payloadJson = '{}') => {
+            if (!['ready', 'frame', 'action', 'error'].includes(type)) return;
+            let payload;
+            try { payload = JSON.parse(payloadJson); }
+            catch { reportError('Python sent an invalid bridge message'); return; }
+            if (type === 'ready' || type === 'frame') {
+              ready = true;
+              clearTimeout(watchdog);
+              loading.hidden = true;
+            }
+            if (type === 'error') {
+              reportError(payload?.message || 'Python UI failed');
+              return;
+            }
+            send(type, payload);
+          },
+        });
+
+        window.addEventListener('error', (event) => {
+          if (event.error || event.message) reportError(event.error || event.message);
+          else if (event.target instanceof HTMLScriptElement) reportError('Pyxel runtime could not be loaded');
+        }, true);
+        window.addEventListener('unhandledrejection', (event) => reportError(event.reason));
+
+        send('loading', { phase: 'runtime' });
+        watchdog = setTimeout(() => {
+          if (!ready) reportError('Pyxel runtime timed out while loading');
+        }, 90000);
+
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/gh/kitao/pyxel@v2.8.7/wasm/pyxel.js';
+        script.onerror = () => reportError('Pyxel runtime could not be loaded');
+        script.onload = () => {
+          // Pyxel's pinned launcher normally displays game artwork and waits for a start click.
+          // This entry point hosts an application UI, so create only its real SDL / Pyxel canvas.
+          window._createScreenElements = async () => {
+            const canvas = document.createElement('canvas');
+            canvas.id = 'canvas';
+            canvas.tabIndex = -1;
+            canvas.setAttribute('aria-hidden', 'true');
+            document.getElementById('pyxel-screen').appendChild(canvas);
+            return canvas;
+          };
+          window._waitForInput = async () => {};
+
+          const displayError = window._displayErrorOverlay;
+          window._displayErrorOverlay = (error) => {
+            reportError(error);
+            displayError(error);
+          };
+
+          const app = document.createElement('pyxel-run');
+          app.setAttribute('root', '.');
+          app.setAttribute('name', 'ui.py');
+          // The UI uses normal mouse, touch, and semantic host buttons; no virtual gamepad.
+          document.body.appendChild(app);
+        };
+        document.head.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>

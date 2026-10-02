@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:pyxel": "vite --mode pyxel",
     "build": "tsc --noEmit && vite build",
+    "build:pyxel": "tsc --noEmit && vite build --mode pyxel",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },

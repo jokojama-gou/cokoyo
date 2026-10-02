@@ -9,6 +9,7 @@ import { CallLog } from './demo/CallLog';
 import { DbPanel } from './demo/DbPanel';
 import { DemoPanel } from './demo/DemoPanel';
 import { Phone } from './phone/Phone';
+import { PyxelUI } from './pyxel/PyxelUI';
 import { shell, useMockBackend } from './config';
 
 function Explain() {
@@ -36,7 +37,7 @@ function Explain() {
 }
 
 export function App() {
-  if (shell === 'app') return <AppProvider><Phone /></AppProvider>;
+  if (shell === 'app') return <AppProvider><PyxelUI /></AppProvider>;
   // 実データの説明画面（/explain）は、管理用パスワードで入った人にだけ見せる。
   // 模擬データ（/test）は誰でも触れる。
   // AppProvider は開いてから置く（入る前にアプリ側の通信を始めないため）。

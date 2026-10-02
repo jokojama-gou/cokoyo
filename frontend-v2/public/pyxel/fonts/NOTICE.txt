@@ -1,0 +1,9 @@
+umplus_j10r.bdf
+Copyright (C) 2002-2004 COZ
+
+Japanese bitmap font bundled with the official Pyxel v2.8.7 examples:
+https://github.com/kitao/pyxel/blob/v2.8.7/python/pyxel/examples/assets/umplus_j10r.bdf
+
+The M+ bitmap font license is included in LICENSE_MPLUS.txt.
+License source:
+https://github.com/itouhiro/PixelMplus/blob/master/misc/mplus_bitmap_fonts/LICENSE_E
