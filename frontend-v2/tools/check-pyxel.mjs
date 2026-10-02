@@ -310,6 +310,6 @@ try {
   console.error('Failed requests:', failedRequests.slice(-12));
   process.exitCode = 1;
 } finally {
-  await writeFile(`${output}/results.json`, JSON.stringify({ url, completed, errors, failedRequests }, null, 2));
+  await writeFile(`${output}/${bootstrapOnly ? 'bootstrap-results' : 'results'}.json`, JSON.stringify({ url, completed, errors, failedRequests }, null, 2));
   await browser.close();
 }
